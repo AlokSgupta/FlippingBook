@@ -13,17 +13,83 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(
+                135deg,
+                #FF9933 0%,      /* India Saffron */
+                #B22234 15%,     /* US Red */
+                #3C3B6E 30%,     /* US Blue */
+                #FFFFFF 45%,     /* White (both flags) */
+                #138808 60%,     /* India Green */
+                #3C3B6E 75%,     /* US Blue */
+                #FF9933 90%,     /* India Saffron */
+                #B22234 100%     /* US Red */
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 153, 51, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(60, 59, 110, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(19, 136, 8, 0.15) 0%, transparent 60%);
+            animation: rotate 40s linear infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(178, 34, 52, 0.1) 50%, transparent 60%);
+            background-size: 200% 200%;
+            animation: shimmer 15s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .container {
-            max-width: 1200px;
             width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .book-container {
@@ -31,24 +97,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            flex: 1;
+            width: 100%;
+            padding: 10px 10px 5px 10px;
         }
 
         .book {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            height: 100%;
+            max-width: min(90vw, calc(90vh * 4/3));
+            max-height: min(90vh, calc(90vw * 3/4));
             transform-style: preserve-3d;
             background: #fff;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(255, 153, 51, 0.3),
+                0 0 30px rgba(60, 59, 110, 0.2),
+                inset 0 0 20px rgba(178, 34, 52, 0.08);
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .page {
             position: absolute;
-            width: 50%;
+            width: 100%;
             height: 100%;
             top: 0;
+            left: 0;
             background: white;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -57,18 +133,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 10px;
             overflow: hidden;
+            backface-visibility: hidden;
         }
 
-        .page.left {
-            left: 0;
-            border-right: 1px solid #ddd;
+        .page.current {
+            z-index: 2;
         }
 
-        .page.right {
-            right: 0;
-            border-left: 1px solid #ddd;
+        .page.hidden {
+            display: none;
         }
 
         .page img {
@@ -79,17 +154,14 @@
 
         .page-number {
             position: absolute;
-            bottom: 20px;
+            bottom: 5px;
             font-size: 14px;
             color: #666;
         }
 
-        .page.left .page-number {
-            left: 20px;
-        }
-
-        .page.right .page-number {
-            right: 20px;
+        .page .page-number {
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .flipped {
@@ -101,26 +173,54 @@
             justify-content: center;
             gap: 20px;
             align-items: center;
+            padding: 10px;
+            height: 60px;
         }
 
         button {
-            padding: 12px 30px;
+            padding: 6px 15px;
             font-size: 16px;
-            background: white;
-            border: none;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            border: 2px solid rgba(255, 153, 51, 0.4);
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(60, 59, 110, 0.2);
             font-weight: 600;
-            color: #667eea;
+            color: #3C3B6E;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 153, 51, 0.3), rgba(60, 59, 110, 0.3));
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            background: #667eea;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(178, 34, 52, 0.4),
+                0 0 20px rgba(19, 136, 8, 0.3);
+            background: linear-gradient(135deg, #FF9933 0%, #B22234 50%, #3C3B6E 100%);
             color: white;
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         button:disabled {
@@ -132,14 +232,88 @@
             color: white;
             font-size: 18px;
             font-weight: 500;
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         .cover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(
+                135deg,
+                #FF9933 0%,
+                #B22234 25%,
+                #3C3B6E 50%,
+                #138808 75%,
+                #FF9933 100%
+            );
+            background-size: 200% 200%;
+            animation: coverGradient 10s ease infinite;
             color: white;
-            font-size: 32px;
+            font-size: clamp(20px, 4vw, 32px);
             font-weight: bold;
             text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            animation: coverRotate 25s linear infinite;
+        }
+
+        @keyframes coverGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes coverRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cover h1 {
+            font-size: clamp(18px, 4vw, 32px);
+            line-height: 1.2;
+            margin: 0;
+            padding: 0 10px;
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover p {
+            font-size: clamp(14px, 2.5vw, 18px) !important;
+            line-height: 1.4;
+            padding: 0 10px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-logo {
+            width: clamp(60px, 15vw, 120px);
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: white;
+            padding: 5px;
+            position: relative;
+            z-index: 1;
         }
 
         .content-page {
@@ -150,36 +324,87 @@
 
         @media (max-width: 900px) {
             .book {
-                width: 600px;
-                height: 450px;
+                max-width: min(92vw, calc(85vh * 4/3));
+                max-height: min(85vh, calc(92vw * 3/4));
             }
             
             .page {
-                padding: 30px;
+                padding: 8px;
             }
             
-            .cover {
-                font-size: 24px;
+            .cover h1 {
+                font-size: clamp(16px, 3.5vw, 24px);
+            }
+            
+            .cover p {
+                font-size: clamp(12px, 2vw, 16px) !important;
             }
         }
 
         @media (max-width: 650px) {
             .book {
-                width: 90vw;
-                height: 67.5vw;
+                max-width: min(95vw, calc(85vh * 4/3));
+                max-height: min(85vh, calc(95vw * 3/4));
+            }
+            
+            .book-container {
+                padding: 5px;
+            }
+            
+            .controls {
+                height: 50px;
+                padding: 5px;
             }
             
             .page {
-                padding: 20px;
+                padding: 5px;
             }
             
-            .cover {
-                font-size: 20px;
+            .cover h1 {
+                font-size: clamp(14px, 3vw, 20px);
+                line-height: 1.1;
+            }
+            
+            .cover p {
+                font-size: clamp(10px, 2vw, 14px) !important;
+                margin-top: 10px !important;
+            }
+            
+            .page-info {
+                font-size: 14px;
             }
             
             button {
-                padding: 10px 20px;
-                font-size: 14px;
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .book {
+                max-width: min(98vw, calc(88vh * 4/3));
+                max-height: min(88vh, calc(98vw * 3/4));
+            }
+            
+            .cover h1 {
+                font-size: clamp(12px, 2.5vw, 16px);
+            }
+            
+            .cover p {
+                font-size: clamp(9px, 1.8vw, 12px) !important;
+            }
+            
+            .page-info {
+                font-size: 12px;
+            }
+            
+            button {
+                padding: 4px 8px;
+                font-size: 11px;
             }
         }
     </style>
@@ -202,56 +427,48 @@
     <script>
         // Configuration - Add your slide images here
         const slides = [
-            { type: 'cover', title: 'My Flipping Book', subtitle: 'Click Next to Start' },
-            { type: 'image', src: 'slides/slide1.jpg' },
-            { type: 'image', src: 'slides/slide2.jpg' },
-            { type: 'image', src: 'slides/slide3.jpg' },
-            { type: 'image', src: 'slides/slide4.jpg' },
-            { type: 'image', src: 'slides/slide5.jpg' },
+            { type: 'cover', title: 'AIACPA Annual Gala 2025', subtitle: 'Program Guide - Click Next to Start' },
+            { type: 'image', src: 'slides/Slide1.png' },
+            { type: 'image', src: 'slides/Slide2.png' },
             // Add more slides as needed
         ];
 
         let currentPage = 0;
         const book = document.getElementById('book');
+        let pages = [];
+        let isAnimating = false;
 
         // Initialize book
         function initBook() {
             book.innerHTML = '';
+            pages = [];
             
-            // Create pages (2 pages per spread)
-            for (let i = 0; i < slides.length; i += 2) {
-                const spread = document.createElement('div');
-                spread.className = 'spread';
-                spread.style.position = 'absolute';
-                spread.style.width = '100%';
-                spread.style.height = '100%';
-                spread.style.display = i === 0 ? 'flex' : 'none';
-                spread.setAttribute('data-spread', i / 2);
-                
-                // Left page
-                const leftPage = createPage(slides[i], i, 'left');
-                spread.appendChild(leftPage);
-                
-                // Right page (if exists)
-                if (i + 1 < slides.length) {
-                    const rightPage = createPage(slides[i + 1], i + 1, 'right');
-                    spread.appendChild(rightPage);
-                }
-                
-                book.appendChild(spread);
+            // Create individual pages
+            slides.forEach((slide, index) => {
+                const page = createPage(slide, index);
+                page.classList.add('hidden');
+                book.appendChild(page);
+                pages.push(page);
+            });
+            
+            // Show first page
+            if (pages.length > 0) {
+                pages[0].classList.remove('hidden');
+                pages[0].classList.add('current');
             }
             
             updateControls();
         }
 
-        function createPage(slide, index, side) {
+        function createPage(slide, index) {
             const page = document.createElement('div');
-            page.className = `page ${side}`;
+            page.className = 'page';
             
             if (slide.type === 'cover') {
                 page.classList.add('cover');
                 page.innerHTML = `
                     <div>
+                        <img src="asset/logo.jpg" alt="Logo" class="cover-logo">
                         <h1>${slide.title}</h1>
                         <p style="margin-top: 20px; font-size: 18px; font-weight: normal;">${slide.subtitle}</p>
                     </div>
@@ -267,39 +484,59 @@
         }
 
         function nextPage() {
-            const totalSpreads = Math.ceil(slides.length / 2);
-            if (currentPage < totalSpreads - 1) {
+            if (isAnimating || currentPage >= slides.length - 1) return;
+            
+            isAnimating = true;
+            const currentPageEl = pages[currentPage];
+            
+            // Flip current page
+            currentPageEl.style.transform = 'rotateY(-180deg)';
+            
+            setTimeout(() => {
+                currentPageEl.classList.add('hidden');
+                currentPageEl.classList.remove('current');
+                currentPageEl.style.transform = '';
+                
                 currentPage++;
-                showSpread(currentPage);
+                const nextPageEl = pages[currentPage];
+                nextPageEl.classList.remove('hidden');
+                nextPageEl.classList.add('current');
+                
                 updateControls();
-            }
+                isAnimating = false;
+            }, 800);
         }
 
         function previousPage() {
-            if (currentPage > 0) {
-                currentPage--;
-                showSpread(currentPage);
+            if (isAnimating || currentPage === 0) return;
+            
+            isAnimating = true;
+            const currentPageEl = pages[currentPage];
+            
+            currentPageEl.classList.add('hidden');
+            currentPageEl.classList.remove('current');
+            
+            currentPage--;
+            const prevPageEl = pages[currentPage];
+            prevPageEl.classList.remove('hidden');
+            prevPageEl.classList.add('current');
+            prevPageEl.style.transform = 'rotateY(-180deg)';
+            
+            setTimeout(() => {
+                prevPageEl.style.transform = '';
+            }, 10);
+            
+            setTimeout(() => {
                 updateControls();
-            }
-        }
-
-        function showSpread(spreadIndex) {
-            const spreads = document.querySelectorAll('.spread');
-            spreads.forEach((spread, index) => {
-                spread.style.display = index === spreadIndex ? 'flex' : 'none';
-            });
+                isAnimating = false;
+            }, 800);
         }
 
         function updateControls() {
-            const totalSpreads = Math.ceil(slides.length / 2);
-            const pageStart = currentPage * 2 + 1;
-            const pageEnd = Math.min(pageStart + 1, slides.length);
-            
-            document.getElementById('pageInfo').textContent = 
-                pageEnd > pageStart ? `Pages ${pageStart}-${pageEnd}` : `Page ${pageStart}`;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${slides.length}`;
             
             document.getElementById('prevBtn').disabled = currentPage === 0;
-            document.getElementById('nextBtn').disabled = currentPage >= totalSpreads - 1;
+            document.getElementById('nextBtn').disabled = currentPage >= slides.length - 1;
         }
 
         // Keyboard navigation
