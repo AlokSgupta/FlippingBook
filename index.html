@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flipping Book</title>
+    <title>Annual Gala 2025</title>
     <style>
         * {
             margin: 0;
@@ -30,10 +30,13 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100vw;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         body::before {
@@ -125,7 +128,16 @@
             height: 100%;
             top: 0;
             left: 0;
-            background: white;
+            background: linear-gradient(
+                135deg,
+                #FF9933 0%,
+                #B22234 25%,
+                #3C3B6E 50%,
+                #138808 75%,
+                #FF9933 100%
+            );
+            background-size: 200% 200%;
+            animation: coverGradient 10s ease infinite;
             transform-origin: left center;
             transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
@@ -136,6 +148,21 @@
             padding: 10px;
             overflow: hidden;
             backface-visibility: hidden;
+            position: relative;
+        }
+        
+        .page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+            animation: coverRotate 25s linear infinite;
+            pointer-events: none;
         }
 
         .page.current {
@@ -175,6 +202,7 @@
             align-items: center;
             padding: 10px;
             height: 60px;
+            flex-shrink: 0;
         }
 
         button {
@@ -316,6 +344,64 @@
             z-index: 1;
         }
 
+        .slide-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(
+                135deg,
+                #FF9933 0%,
+                #B22234 25%,
+                #3C3B6E 50%,
+                #138808 75%,
+                #FF9933 100%
+            );
+            background-size: 200% 200%;
+            animation: coverGradient 10s ease infinite;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide-logo {
+            width: clamp(30px, 8vw, 50px);
+            height: auto;
+            border-radius: 5px;
+            background: white;
+            padding: 3px;
+        }
+
+        .slide-title {
+            color: white;
+            font-size: clamp(12px, 2.5vw, 18px);
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        .slide-content {
+            position: absolute;
+            top: clamp(40px, 10vw, 70px);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .slide-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
         .content-page {
             font-size: 16px;
             line-height: 1.6;
@@ -342,18 +428,30 @@
         }
 
         @media (max-width: 650px) {
+            body {
+                overflow-x: hidden;
+            }
+            
             .book {
-                max-width: min(95vw, calc(85vh * 4/3));
-                max-height: min(85vh, calc(95vw * 3/4));
+                max-width: min(95vw, calc(82vh * 4/3));
+                max-height: min(82vh, calc(95vw * 3/4));
             }
             
             .book-container {
-                padding: 5px;
+                padding: 5px 5px 0 5px;
             }
             
             .controls {
-                height: 50px;
-                padding: 5px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 55px;
+                padding: 8px;
+                background: rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                z-index: 100;
+                margin: 0;
             }
             
             .page {
@@ -386,8 +484,8 @@
 
         @media (max-width: 400px) {
             .book {
-                max-width: min(98vw, calc(88vh * 4/3));
-                max-height: min(88vh, calc(98vw * 3/4));
+                max-width: min(98vw, calc(80vh * 4/3));
+                max-height: min(80vh, calc(98vw * 3/4));
             }
             
             .cover h1 {
@@ -399,12 +497,17 @@
             }
             
             .page-info {
-                font-size: 12px;
+                font-size: 11px;
             }
             
             button {
                 padding: 4px 8px;
-                font-size: 11px;
+                font-size: 10px;
+            }
+            
+            .controls {
+                height: 50px;
+                padding: 5px;
             }
         }
     </style>
@@ -475,7 +578,13 @@
                 `;
             } else if (slide.type === 'image') {
                 page.innerHTML = `
-                    <img src="${slide.src}" alt="Slide ${index + 1}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%23999%22%3ESlide ${index + 1}%3C/text%3E%3C/svg%3E'">
+                    <div class="slide-header">
+                        <img src="asset/logo.jpg" alt="Logo" class="slide-logo">
+                        <h2 class="slide-title">AIACPA Annual Gala 2025</h2>
+                    </div>
+                    <div class="slide-content">
+                        <img src="${slide.src}" alt="Slide ${index + 1}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%23999%22%3ESlide ${index + 1}%3C/text%3E%3C/svg%3E'">
+                    </div>
                     <div class="page-number">${index + 1}</div>
                 `;
             }
